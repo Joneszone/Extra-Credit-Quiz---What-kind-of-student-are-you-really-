@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Kind of Student Are You?</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --coral-light: #FAECE7;
+    --coral-mid: #F0997B;
+    --coral: #D85A30;
+    --coral-dark: #993C1D;
+    --coral-deep: #4A1B0C;
+    --purple-light: #EEEDFE;
+    --purple-mid: #AFA9EC;
+    --purple: #534AB7;
+    --purple-dark: #3C3489;
+    --purple-deep: #26215C;
+    --teal-light: #E1F5EE;
+    --teal: #1D9E75;
+    --teal-dark: #0F6E56;
+    --amber-light: #FAEEDA;
+    --amber: #BA7517;
+    --amber-dark: #633806;
+    --text: #1a1714;
+    --text-muted: #6b6660;
+    --border: rgba(0,0,0,0.1);
+    --bg: #faf8f5;
+    --card-bg: #ffffff;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+    color: var(--text);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .header {
+    text-align: center;
+    padding: 2.5rem 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ec-badge {
+    display: inline-block;
+    background: var(--teal-light);
+    color: var(--teal-dark);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 99px;
+    margin-bottom: 1.25rem;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 400;
+    color: var(--coral-deep);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .header p {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--coral);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .q-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 1rem;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .q-card.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--coral);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 1.25rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .opt:hover {
+    border-color: var(--coral-mid);
+    background: var(--coral-light);
+  }
+
+  .opt.selected {
+    border-color: var(--coral);
+    background: var(--coral-light);
+    color: var(--coral-deep);
+  }
+
+  .opt-letter {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--coral);
+    min-width: 18px;
+    padding-top: 1px;
+  }
+
+  .result-card {
+    display: none;
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    animation: fadeUp 0.4s ease;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-card.show { display: block; }
+
+  .result-hero {
+    padding: 2rem 2rem 1.5rem;
+    background: var(--purple-light);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+
+  .result-type {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--purple-deep);
+    line-height: 1.2;
+    margin-bottom: 0;
+  }
+
+  .result-body { padding: 1.5rem 2rem; }
+
+  .result-desc {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .result-desc strong { color: var(--coral-dark); font-weight: 600; }
+
+  .submit-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    display: none;
+  }
+
+  .submit-card.show { display: block; animation: fadeUp 0.3s ease 0.1s both; }
+
+  .submit-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .submit-desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .submit-prompt {
+    background: var(--amber-light);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--amber-dark);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .chip strong { color: var(--text); font-weight: 600; }
+
+  .retry-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    margin-top: 1rem;
+    display: inline-block;
+  }
+
+  .retry-btn:hover { border-color: var(--coral-mid); color: var(--coral-dark); }
+
+  @media (max-width: 480px) {
+    .q-card, .result-body, .submit-card { padding: 1.25rem; }
+    .result-hero { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="ec-badge">Extra Credit</div>
+    <h1>What kind of student are you, really?</h1>
+    <p>5 quick questions. Find out your learner type. Earn bonus points. Actual fun guaranteed.</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <span class="progress-label" id="progress-label">Question 1 of 5</span>
+  </div>
+
+  <div class="q-card active" id="q1">
+    <div class="q-number">Question 1</div>
+    <p class="q-text">It's 9pm and you have an assignment due. You:</p>
+    <div class="options">
+      <button class="opt" onclick="pick(1,'A',this)"><span class="opt-letter">A</span> Already finished it two days ago. You don't mess around.</button>
+      <button class="opt" onclick="pick(1,'B',this)"><span class="opt-letter">B</span> Just now opened Canvas for the first time. It's fine.</button>
+      <button class="opt" onclick="pick(1,'C',this)"><span class="opt-letter">C</span> You're doing it in between two other things you also have going on.</button>
+      <button class="opt" onclick="pick(1,'D',this)"><span class="opt-letter">D</span> You're reading the rubric very carefully before you start anything.</button>
+    </div>
+  </div>
+
+  <div class="q-card" id="q2">
+    <div class="q-number">Question 2</div>
+    <p class="q-text">Your "study space" is best described as:</p>
+    <div class="options">
+      <button class="opt" onclick="pick(2,'A',this)"><span class="opt-letter">A</span> A dedicated spot. Same chair, same mug, same playlist every time.</button>
+      <button class="opt" onclick="pick(2,'B',this)"><span class="opt-letter">B</span> Wherever I land. Couch, car, bathroom — honestly anywhere works.</button>
+      <button class="opt" onclick="pick(2,'C',this)"><span class="opt-letter">C</span> The kitchen table, surrounded by other people's stuff and noise.</button>
+      <button class="opt" onclick="pick(2,'D',this)"><span class="opt-letter">D</span> I have a system. Color-coded notes, organized folders, the whole thing.</button>
+    </div>
+  </div>
+
+  <div class="q-card" id="q3">
+    <div class="q-number">Question 3</div>
+    <p class="q-text">When you hit a concept you don't understand, you:</p>
+    <div class="options">
+      <button class="opt" onclick="pick(3,'A',this)"><span class="opt-letter">A</span> Go back and re-read until it clicks, no matter how long it takes.</button>
+      <button class="opt" onclick="pick(3,'B',this)"><span class="opt-letter">B</span> Google it, watch a YouTube video, figure it out on the fly.</button>
+      <button class="opt" onclick="pick(3,'C',this)"><span class="opt-letter">C</span> Ask someone — a classmate, a friend, anyone who might know.</button>
+      <button class="opt" onclick="pick(3,'D',this)"><span class="opt-letter">D</span> Make a note to ask your professor and actually follow through.</button>
+    </div>
+  </div>
+
+  <div class="q-card" id="q4">
+    <div class="q-number">Question 4</div>
+    <p class="q-text">The hardest part of being an online student is:</p>
+    <div class="options">
+      <button class="opt" onclick="pick(4,'A',this)"><span class="opt-letter">A</span> Staying motivated when no one's watching.</button>
+      <button class="opt" onclick="pick(4,'B',this)"><span class="opt-letter">B</span> Keeping track of everything at once.</button>
+      <button class="opt" onclick="pick(4,'C',this)"><span class="opt-letter">C</span> Feeling like you're doing it alone.</button>
+      <button class="opt" onclick="pick(4,'D',this)"><span class="opt-letter">D</span> Not knowing if you're doing it right.</button>
+    </div>
+  </div>
+
+  <div class="q-card" id="q5">
+    <div class="q-number">Question 5</div>
+    <p class="q-text">Pick the one that sounds most like you on a good week:</p>
+    <div class="options">
+      <button class="opt" onclick="pick(5,'A',this)"><span class="opt-letter">A</span> I knocked out everything on my to-do list and felt great about it.</button>
+      <button class="opt" onclick="pick(5,'B',this)"><span class="opt-letter">B</span> I winged it and somehow pulled it off — again.</button>
+      <button class="opt" onclick="pick(5,'C',this)"><span class="opt-letter">C</span> I leaned on my people and got through it together.</button>
+      <button class="opt" onclick="pick(5,'D',this)"><span class="opt-letter">D</span> I triple-checked everything and turned in my best work.</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-hero">
+      <div class="result-eyebrow">Your learner type</div>
+      <div class="result-type" id="result-type"></div>
+    </div>
+    <div class="result-body">
+      <p class="result-desc" id="result-desc"></p>
+      <button class="retry-btn" onclick="restart()">&#8635; Retake the quiz</button>
+    </div>
+  </div>
+
+  <div class="submit-card" id="submit-card">
+    <p class="submit-title">Almost done — grab your points!</p>
+    <p class="submit-desc">Reply to the announcement in Canvas with your result and one honest sentence about how accurate it is.</p>
+    <div class="submit-prompt">
+      Try: "I got <em>[your type]</em> and it's [totally accurate / kind of accurate / completely wrong] because..."
+    </div>
+    <div class="chips">
+      <div class="chip"><strong>Time:</strong> ~10 min total</div>
+      <div class="chip"><strong>Points:</strong> 10 extra credit</div>
+      <div class="chip"><strong>Graded on:</strong> showing up, not showing off</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const answers = {};
+
+const types = {
+  A: {
+    name: "The Ahead-of-Schedule Achiever",
+    desc: "You plan, you execute, and you sleep well on Sunday nights. You thrive on structure and the quiet satisfaction of being done before everyone else even started. <strong>Your superpower:</strong> reliability and follow-through. <strong>Your kryptonite:</strong> being hard on yourself when life inevitably gets in the way — because it will, and that's okay."
+  },
+  B: {
+    name: "The Clutch Player",
+    desc: "Deadlines don't scare you — they motivate you. You work fast, adapt faster, and somehow always land on your feet. People underestimate you, and that's their mistake. <strong>Your superpower:</strong> grace under pressure. <strong>Your kryptonite:</strong> the one time the wifi goes out at 11:58pm."
+  },
+  C: {
+    name: "The Community-Powered Learner",
+    desc: "You know that learning is better together. You show up for people and you count on them to show up for you — and that's not a weakness, it's wisdom. <strong>Your superpower:</strong> building real connections even inside an online classroom. <strong>Your kryptonite:</strong> those stretches where you have to go it alone."
+  },
+  D: {
+    name: "The Thoughtful Craftsperson",
+    desc: "You don't just complete work — you do it right. You read the rubric twice, ask the smart questions, and genuinely care about quality. Professors notice. <strong>Your superpower:</strong> attention to detail and intellectual honesty. <strong>Your kryptonite:</strong> knowing when good enough is actually good enough."
+  }
+};
+
+function pick(qNum, letter, el) {
+  const block = document.getElementById('q' + qNum);
+  block.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[qNum] = letter;
+
+  setTimeout(() => {
+    if (qNum < 5) {
+      block.classList.remove('active');
+      document.getElementById('q' + (qNum + 1)).classList.add('active');
+      const pct = (qNum / 5) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-label').textContent = 'Question ' + (qNum + 1) + ' of 5';
+    } else {
+      showResult();
+    }
+  }, 320);
+}
+
+function showResult() {
+  const counts = { A: 0, B: 0, C: 0, D: 0 };
+  Object.values(answers).forEach(v => counts[v]++);
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  const t = types[top];
+
+  document.getElementById('result-type').textContent = t.name;
+  document.getElementById('result-desc').innerHTML = t.desc;
+  document.getElementById('result-card').classList.add('show');
+  document.getElementById('submit-card').classList.add('show');
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('progress-label').textContent = 'Complete!';
+
+  document.querySelector('.q-card.active').classList.remove('active');
+  document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restart() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.querySelectorAll('.q-card').forEach((c, i) => {
+    c.classList.remove('active');
+    c.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+    if (i === 0) c.classList.add('active');
+  });
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('submit-card').classList.remove('show');
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-label').textContent = 'Question 1 of 5';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
